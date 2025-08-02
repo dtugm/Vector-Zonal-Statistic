@@ -1,6 +1,6 @@
-# Vector Zonal Statistics Processor CLI
+# Vector Zonal Statistics Processor
 
-A command-line interface for calculating zonal statistics from raster data across multiple vector files in batch processing mode.
+A comprehensive tool for calculating zonal statistics from raster data across multiple vector files with both command-line interface (CLI) and graphical user interface (GUI) support.
 
 ## Table of Contents
 
@@ -9,419 +9,508 @@ A command-line interface for calculating zonal statistics from raster data acros
 - [Installation](#installation)
 - [Quick Start](#quick-start)
 - [Usage](#usage)
+  - [GUI Interface](#gui-interface)
+  - [CLI Interface](#cli-interface)
 - [Project Structure](#project-structure)
-- [API Reference](#api-reference)
+- [Configuration](#configuration)
 - [Examples](#examples)
 - [Troubleshooting](#troubleshooting)
+- [API Reference](#api-reference)
 - [Contributing](#contributing)
 - [License](#license)
 
 ## Overview
 
-The Batch Zonal Statistics Processor is a Python CLI tool designed to efficiently calculate zonal statistics from OHM (Organic Hazard Model) and slope raster data across multiple vector files. This tool is particularly useful for environmental analysis, risk assessment, and spatial data processing workflows [1].
+The Vector Zonal Statistics Processor is a powerful geospatial analysis tool that calculates statistical summaries (mean, median, std, min, max, count) of raster values within vector polygon boundaries. It supports batch processing of multiple vector files and provides both user-friendly GUI and efficient CLI interfaces.
 
 ### Key Capabilities
 
-- **Batch Processing**: Process multiple vector files automatically
-- **Multi-Raster Support**: Calculate statistics from both OHM and slope rasters
-- **Format Flexibility**: Supports various vector formats (GeoJSON, Shapefile, GPKG, KML, GML)
-- **CRS Handling**: Automatic coordinate reference system alignment
-- **Error Recovery**: Robust error handling with detailed logging
-- **Modular Design**: Clean, maintainable codebase with separated concerns
+- **Batch Processing**: Process multiple vector files simultaneously
+- **Multiple Statistics**: Calculate mean, median, standard deviation, min, max, and count
+- **Coordinate System Handling**: Support for EPSG coordinate reference systems
+- **Cross-Platform**: Works on Windows, macOS, and Linux
+- **Dual Interface**: Both GUI and CLI options available
+- **Conda Environment Support**: Integrated conda environment activation
 
 ## Features
 
-### Core Functionality
-- ✅ Batch processing of vector files
-- ✅ Zonal statistics calculation (mean, min, max, std, count)
-- ✅ Automatic CRS reprojection
-- ✅ Multiple input format support
-- ✅ GeoJSON output format
-- ✅ Comprehensive logging system
-- ✅ Processing summary reports
+### Core Features
+- ✅ Batch zonal statistics calculation
+- ✅ Multiple raster input support (OHM and Slope rasters)
+- ✅ Vector shapefile processing
+- ✅ EPSG coordinate reference system specification
+- ✅ Comprehensive statistical outputs
+- ✅ Progress tracking and logging
+- ✅ Error handling and validation
 
-### Supported File Formats
-
-**Input Vector Formats:**
-- GeoJSON (`.geojson`, `.json`)
-- Geopackage (`.gpkg`)
-- Shapefile (`.shp`)
-- KML (`.kml`)
-- GML (`.gml`)
-
-**Input Raster Formats:**
-- GeoTIFF (`.tif`, `.tiff`)
-- IMG (`.img`)
-- NetCDF (`.nc`)
-
-**Output Format:**
-- GeoJSON (`.geojson`)
+### Interface Features
+- ✅ **GUI Interface**: User-friendly graphical interface
+- ✅ **CLI Interface**: Command-line batch processing
+- ✅ **Cross-platform launchers**: Windows (.bat), macOS (.command), Linux (.sh)
+- ✅ **Conda environment integration**: Automatic environment activation
+- ✅ **Real-time progress monitoring**
+- ✅ **Detailed logging and error reporting**
 
 ## Installation
 
 ### Prerequisites
 
-- Python 3.8 or higher
-- pip package manager
+- Python 3.8+ (recommended: Python 3.10)
+- Miniconda or Anaconda
+- Required Python packages:
+  - `geopandas`
+  - `rasterio`
+  - `rasterstats`
+  - `tkinter` (for GUI)
 
-### Install Dependencies
+### Setup Instructions
 
-```bash
-# Clone the repository
-git clone <repository-url>
-cd zonal_stats_cli
+1. **Clone or download the project**:
+   ```bash
+   git clone <repository-url>
+   cd vector-zonal-stats
+   ```
 
-# Install required packages
-pip install -r requirements.txt
-```
+2. **Create conda environment**:
+   ```bash
+   conda create -n py310 python=3.10
+   conda activate py310
+   ```
 
-### Dependencies
+3. **Install dependencies**:
+   ```bash
+   pip install geopandas rasterio rasterstats
+   # For conda users:
+   conda install -c conda-forge geopandas rasterio
+   pip install rasterstats
+   ```
 
-```txt
-geopandas>=0.12.0
-rasterstats>=0.15.0
-rasterio>=1.3.0
-shapely>=2.0.0
-fiona>=1.8.0
-```
-
-### Verify Installation
-
-```bash
-python main.py --version
-```
+4. **Configure launcher scripts** (if needed):
+   Edit the environment name in launcher scripts:
+   ```bash
+   # In run_gui.bat, run_gui.command, or run_gui.sh
+   CONDA_ENV_NAME="py310"  # Change to your environment name
+   ```
 
 ## Quick Start
 
-### Basic Usage
+### GUI Interface (Recommended for beginners)
 
-```bash
-python main.py -o ohm_raster.tif -s slope_raster.tif -i ./input_vectors -out ./results
+**Windows:**
+```cmd
+# Double-click run_gui.bat or run from command prompt:
+bin\run_gui.bat
 ```
 
-### With Verbose Logging
+**macOS:**
+```bash
+# Double-click run_gui.command in Finder or run:
+./bin/run_gui.command
+```
+
+**Linux:**
+```bash
+# Run the shell script:
+./bin/run_gui.sh
+```
+
+### CLI Interface (Recommended for batch processing)
 
 ```bash
-python main.py -o ohm.tif -s slope.tif -i ./digitasi -out ./output --verbose
+# Basic usage
+python main.py -o ohm_raster.tif -s slope_raster.tif -i input_vectors/ -out results/
+
+# With EPSG specification
+python main.py -o ohm.tif -s slope.tif -i ./vectors -out ./output --epsg 4326
+
+# Show help
+python main.py --help
 ```
 
 ## Usage
 
-### Command Line Interface
+### GUI Interface
 
-The CLI follows Python best practices for command-line tool design, providing clear argument structure and helpful error messages [2].
+The GUI provides an intuitive interface for configuring and running zonal statistics analysis.
+
+#### Main Interface Components
+
+1. **Input Configuration Panel**
+   - **OHM Raster File**: Select the primary raster file for analysis
+   - **Slope Raster File**: Select the secondary raster file
+   - **Input Vector Directory**: Choose directory containing vector files (.shp)
+   - **Output Directory**: Specify where results will be saved
+   - **EPSG Code**: Set coordinate reference system (optional)
+
+2. **Processing Controls**
+   - **Validate Inputs**: Check all inputs before processing
+   - **Start Processing**: Begin batch analysis
+   - **Clear Log**: Clear the output log window
+
+3. **Progress Monitoring**
+   - Real-time progress bar
+   - Detailed logging output
+   - Processing status updates
+
+#### GUI Workflow
+
+1. **Launch the GUI**:
+   - Double-click the appropriate launcher for your OS
+   - Wait for conda environment activation
+
+2. **Configure Inputs**:
+   ```
+   OHM Raster: /path/to/ohm_data.tif
+   Slope Raster: /path/to/slope_data.tif
+   Vector Directory: /path/to/shapefiles/
+   Output Directory: /path/to/results/
+   EPSG Code: 4326 (optional)
+   ```
+
+3. **Validate and Process**:
+   - Click "Validate Inputs" to check configuration
+   - Click "Start Processing" to begin analysis
+   - Monitor progress in the log window
+
+4. **Review Results**:
+   - Check output directory for CSV files
+   - Review processing logs for any issues
+
+#### GUI Features
+
+- **File Browser Integration**: Easy file and directory selection
+- **Input Validation**: Real-time validation of file paths and formats
+- **Progress Tracking**: Visual progress bar and detailed logs
+- **Error Handling**: Clear error messages and recovery suggestions
+- **Cross-Platform**: Consistent interface across operating systems
+
+### CLI Interface
+
+The command-line interface provides powerful batch processing capabilities with full scripting support.
+
+#### Command Syntax
 
 ```bash
 python main.py [OPTIONS]
 ```
 
-### Required Arguments
+#### Required Arguments
 
-| Argument | Short | Description |
-|----------|-------|-------------|
-| `--ohm-raster` | `-o` | Path to OHM raster file |
-| `--slope-raster` | `-s` | Path to slope raster file |
-| `--input-folder` | `-i` | Path to folder containing vector files |
-| `--output-folder` | `-out` | Path to output folder for results |
+| Argument | Short | Description | Example |
+|----------|-------|-------------|---------|
+| `--ohm` | `-o` | Path to OHM raster file | `-o data/ohm.tif` |
+| `--slope` | `-s` | Path to slope raster file | `-s data/slope.tif` |
+| `--input` | `-i` | Input directory with vector files | `-i ./vectors/` |
+| `--output` | `-out` | Output directory for results | `-out ./results/` |
 
-### Optional Arguments
+#### Optional Arguments
 
-| Argument | Description |
-|----------|-------------|
-| `--verbose` | Enable verbose logging output |
-| `--version` | Show version information |
-| `--help` | Show help message and exit |
+| Argument | Short | Description | Default | Example |
+|----------|-------|-------------|---------|---------|
+| `--epsg` | | EPSG code for coordinate system | Auto-detect | `--epsg 4326` |
+| `--help` | `-h` | Show help message | | `--help` |
 
-### Exit Codes
+#### CLI Examples
 
-Following CLI best practices for exit code handling [3]:
+1. **Basic Processing**:
+   ```bash
+   python main.py \
+     --ohm /data/ohm_raster.tif \
+     --slope /data/slope_raster.tif \
+     --input /data/vector_files/ \
+     --output /results/
+   ```
 
-- `0`: Success - All files processed successfully
-- `1`: Partial failure or error occurred
-- `2`: Invalid arguments or input validation failed
+2. **With EPSG Specification**:
+   ```bash
+   python main.py \
+     -o ohm.tif \
+     -s slope.tif \
+     -i ./input_vectors \
+     -out ./output_results \
+     --epsg 3857
+   ```
+
+3. **Processing with Relative Paths**:
+   ```bash
+   python main.py -o data/ohm.tif -s data/slope.tif -i vectors/ -out results/
+   ```
+
+4. **Batch Processing Script**:
+   ```bash
+   #!/bin/bash
+   # Process multiple datasets
+   for dataset in dataset1 dataset2 dataset3; do
+     python main.py \
+       -o "data/${dataset}/ohm.tif" \
+       -s "data/${dataset}/slope.tif" \
+       -i "vectors/${dataset}/" \
+       -out "results/${dataset}/" \
+       --epsg 4326
+   done
+   ```
+
+#### CLI Output
+
+The CLI provides detailed logging and progress information:
+
+```
+2025-08-02 23:14:22,164 - zonal_stats - INFO - Starting Batch Zonal Statistics Processor
+2025-08-02 23:14:22,164 - zonal_stats - INFO - OHM Raster: data/test/rasters/SLOPE_DKI.tif
+2025-08-02 23:14:22,164 - zonal_stats - INFO - Slope Raster: data/test/rasters/SLOPE_DKI.tif
+2025-08-02 23:14:22,164 - zonal_stats - INFO - Input Folder: data/test/vectors/
+2025-08-02 23:14:22,164 - zonal_stats - INFO - Output Folder: data/test/out
+2025-08-02 23:14:22,164 - zonal_stats - INFO - CRS output: 32748
+2025-08-02 23:14:22,164 - zonal_stats - INFO - OHM raster validated: data/test/rasters/SLOPE_DKI.tif
+2025-08-02 23:14:22,164 - zonal_stats - INFO - Slope raster validated: data/test/rasters/SLOPE_DKI.tif
+2025-08-02 23:14:22,164 - zonal_stats - INFO - Input folder validated: data/test/vectors/
+2025-08-02 23:14:22,164 - zonal_stats - INFO - Output folder validated/created: data/test/out
+2025-08-02 23:14:22,164 - zonal_stats - INFO - Starting batch processing
+2025-08-02 23:14:22,166 - zonal_stats - INFO - Found 36 total vector files
+2025-08-02 23:14:22,166 - zonal_stats - INFO - Filtered to 36 valid files
+2025-08-02 23:14:22,166 - zonal_stats - INFO - Processing file 1/36: AG-09-A_BO_Caesar Yoga_BUFFER_Lengkap.geojson
+2025-08-02 23:14:22,166 - zonal_stats - INFO - Processing: AG-09-A_BO_Caesar Yoga_BUFFER_Lengkap.geojson
+2025-08-02 23:14:22,304 - zonal_stats - INFO - Calculating OHM zonal statistics
+2025-08-02 23:14:22,653 - zonal_stats - INFO - Calculating slope zonal statistics
+2025-08-02 23:14:22,946 - zonal_stats - INFO - Successfully combined statistics for 141 features
+...
+...
+2025-08-02 23:16:11,184 - zonal_stats - INFO - Processing summary saved to: data/test/out/processing_summary.json
+2025-08-02 23:16:11,184 - zonal_stats - INFO - Batch processing completed: 36/36 files processed successfully
+2025-08-02 23:16:11,184 - zonal_stats - INFO - All files processed successfully!
+```
 
 ## Project Structure
 
-The project follows Python packaging best practices with a modular structure that separates concerns and improves maintainability [1]:
-
 ```
-zonal_stats_cli/
-├── main.py                 # CLI entry point
-├── requirements.txt        # Project dependencies
-├── README.md              # This documentation
-├── core/                  # Core processing modules
+vector-zonal-stats/
+├── bin/                         # Launcher scripts
+│   ├── run_gui.bat              # Windows GUI launcher
+│   ├── run_gui.command          # macOS GUI launcher (double-click)
+│   ├── run_gui.sh               # Linux GUI launcher
+├── core/                        # Core processing modules
 │   ├── __init__.py
-│   ├── validation.py      # Input validation functions
-│   ├── file_finder.py     # Vector file discovery
-│   ├── crs_handler.py     # CRS management
-│   ├── zonal_calculator.py # Statistics calculation
-│   ├── statistics_combiner.py # Data combination
-│   ├── result_saver.py    # Output file handling
-│   └── batch_processor.py # Main processing logic
-└── utils/                 # Utility modules
-    ├── __init__.py
-    └── logger_config.py   # Logging configuration
+│   ├── processor.py             # Main processing logic
+│   ├── validator.py             # Input validation
+│   └── statistics.py            # Statistical calculations
+├── ui/                          # User interface modules
+│   ├── __init__.py
+│   └── gui_main.py              # GUI implementation
+├── utils/                       # Utility modules
+│   ├── __init__.py
+│   ├── logger_config.py         # Logging configuration
+│   └── file_utils.py            # File handling utilities
+├── main.py                      # CLI entry point
+├── launcher.py                  # Cross-platform launcher
+└── README.md                    # This documentation
 ```
 
-### Module Responsibilities
+## Configuration
 
-Each module has a single, well-defined responsibility following the Single Responsibility Principle [4]:
+### EPSG Coordinate Reference Systems
 
-- **validation.py**: Validates input files and folders
-- **file_finder.py**: Discovers and filters vector files
-- **crs_handler.py**: Manages coordinate reference systems
-- **zonal_calculator.py**: Calculates zonal statistics
-- **statistics_combiner.py**: Combines results from multiple rasters
-- **result_saver.py**: Saves results to output files
-- **batch_processor.py**: Orchestrates the entire processing workflow
+The application supports EPSG codes for coordinate reference system specification:
 
-## API Reference
+#### Common EPSG Codes
+- **4326**: WGS 84 (Geographic, degrees)
+- **3857**: Web Mercator (Projected, meters)
+- **32748**: UTM Zone 48S (Projected, meters)
+- **4269**: NAD83 (Geographic, degrees)
 
-### Core Functions
+#### EPSG Usage
+```bash
+# CLI usage
+python main.py -o ohm.tif -s slope.tif -i vectors/ -out results/ --epsg 4326
 
-#### `validate_all_inputs(ohm_raster, slope_raster, input_folder, output_folder)`
+# GUI usage
+# Enter EPSG code in the "EPSG Code" field (e.g., "4326")
+```
 
-Validates all input parameters before processing.
+### Environment Configuration
 
-**Parameters:**
-- `ohm_raster` (str): Path to OHM raster file
-- `slope_raster` (str): Path to slope raster file
-- `input_folder` (str): Path to input folder
-- `output_folder` (str): Path to output folder
+Edit launcher scripts to match your conda environment:
 
-**Returns:**
-- `bool`: True if all inputs are valid
-
-#### `run_batch_processing(ohm_raster, slope_raster, input_folder, output_folder)`
-
-Executes batch processing of all vector files.
-
-**Parameters:**
-- `ohm_raster` (str): Path to OHM raster file
-- `slope_raster` (str): Path to slope raster file
-- `input_folder` (str): Path to input folder
-- `output_folder` (str): Path to output folder
-
-**Returns:**
-- `tuple`: (successful_count, total_count)
-
-### Utility Functions
-
-#### `setup_logger(name, level)`
-
-Configures logging with consistent formatting.
-
-**Parameters:**
-- `name` (str): Logger name
-- `level` (int): Logging level
-
-**Returns:**
-- `logging.Logger`: Configured logger instance
-
-#### `find_vector_files(input_folder, recursive=True)`
-
-Discovers vector files in the input directory.
-
-**Parameters:**
-- `input_folder` (str): Path to search directory
-- `recursive` (bool): Whether to search subdirectories
-
-**Returns:**
-- `List[Path]`: List of discovered vector files
+```bash
+# In run_gui.bat, run_gui.command, run_gui.sh
+CONDA_ENV_NAME="your_environment_name"
+```
 
 ## Examples
 
-### Example 1: Basic Processing
+### Example 1: Basic GUI Processing
 
-Process all vector files in a folder with OHM and slope rasters:
+1. Launch GUI: Double-click `run_gui.command` (macOS) or `run_gui.bat` (Windows)
+2. Configure inputs:
+   - OHM Raster: `data/elevation.tif`
+   - Slope Raster: `data/slope.tif`
+   - Vector Directory: `shapefiles/watersheds/`
+   - Output Directory: `results/watersheds/`
+3. Click "Validate Inputs" then "Start Processing"
+
+### Example 2: CLI Batch Processing
 
 ```bash
+# Activate conda environment
+conda activate py310
+
+# Run batch processing
 python main.py \
-  --ohm-raster /data/rasters/ohm_model.tif \
-  --slope-raster /data/rasters/slope_degrees.tif \
-  --input-folder /data/vectors/study_areas \
-  --output-folder /results/zonal_stats
+  --ohm data/dem.tif \
+  --slope data/slope.tif \
+  --input shapefiles/study_areas/ \
+  --output results/study_areas/ \
+  --epsg 32633
 ```
 
-### Example 2: Verbose Processing
-
-Enable detailed logging for debugging:
+### Example 3: Multiple Dataset Processing
 
 ```bash
-python main.py \
-  -o ohm.tif \
-  -s slope.tif \
-  -i ./digitasi \
-  -out ./results \
-  --verbose
-```
+#!/bin/bash
+# Process multiple study regions
+regions=("north" "south" "east" "west")
 
-### Example 3: Processing with Different CRS
-
-The tool automatically handles CRS differences:
-
-```bash
-# Vector files in UTM, rasters in WGS84 - automatically handled
-python main.py -o wgs84_ohm.tif -s wgs84_slope.tif -i ./utm_vectors -out ./results
-```
-
-### Output Structure
-
-Each processed vector file generates a corresponding GeoJSON output:
-
-```
-results/
-├── area1_zonal_stats.geojson
-├── area2_zonal_stats.geojson
-├── area3_zonal_stats.geojson
-└── processing_summary.json
-```
-
-### Sample Output Feature
-
-```json
-{
-  "type": "Feature",
-  "geometry": { ... },
-  "properties": {
-    "original_id": 1,
-    "area_name": "Study Area 1",
-    "ohm_mean": 0.75,
-    "ohm_min": 0.12,
-    "ohm_max": 1.0,
-    "ohm_std": 0.23,
-    "ohm_count": 1250,
-    "slope_mean": 15.6,
-    "slope_min": 0.0,
-    "slope_max": 45.2,
-    "slope_std": 8.9,
-    "slope_count": 1250
-  }
-}
+for region in "${regions[@]}"; do
+  echo "Processing region: $region"
+  python main.py \
+    -o "data/${region}/ohm.tif" \
+    -s "data/${region}/slope.tif" \
+    -i "vectors/${region}/" \
+    -out "results/${region}/" \
+    --epsg 4326
+done
 ```
 
 ## Troubleshooting
 
 ### Common Issues
 
-#### 1. "No vector files found"
-
-**Problem**: The tool cannot find vector files in the input folder.
-
-**Solutions:**
-- Verify the input folder path exists
-- Check that files have supported extensions (.geojson, .shp, .gpkg, .kml, .gml)
-- Ensure files are not empty or corrupted
-- Use `--verbose` flag to see detailed file discovery logs
-
-#### 2. "CRS reprojection failed"
-
-**Problem**: Coordinate reference system alignment issues.
-
-**Solutions:**
-- Verify both raster and vector files have defined CRS
-- Check that input files are not corrupted
-- Ensure raster files have proper geospatial metadata
-
-#### 3. "Empty statistics results"
-
-**Problem**: Zonal statistics calculation returns empty results.
-
-**Solutions:**
-- Verify vector geometries overlap with raster extent
-- Check that raster files contain valid data (not all NoData)
-- Ensure vector geometries are valid (not self-intersecting)
-
-#### 4. Memory issues with large files
-
-**Problem**: Out of memory errors with large datasets.
-
-**Solutions:**
-- Process files in smaller batches
-- Ensure sufficient system RAM
-- Consider simplifying complex geometries
-
-### Logging and Debugging
-
-Enable verbose logging for detailed troubleshooting:
-
+#### 1. Conda Environment Not Found
+```
+ERROR: Conda environment 'py310' not found!
+```
+**Solution**:
 ```bash
-python main.py [args] --verbose
+conda create -n py310 python=3.10
+conda activate py310
+pip install geopandas rasterio rasterstats
 ```
 
-Log levels:
-- **INFO**: General processing information
-- **DEBUG**: Detailed step-by-step processing (verbose mode)
-- **WARNING**: Non-fatal issues that may affect results
-- **ERROR**: Fatal errors that prevent processing
+#### 2. Missing Dependencies
+```
+ERROR: ModuleNotFoundError: No module named 'geopandas'
+```
+**Solution**:
+```bash
+conda activate py310
+pip install geopandas rasterio rasterstats
+```
+
+#### 3. EPSG Code Issues
+```
+ERROR: Invalid EPSG code or coordinate system mismatch
+```
+**Solution**:
+- Verify EPSG code is valid (e.g., 4326, 3857)
+- Ensure all input files use compatible coordinate systems
+- Check raster and vector CRS compatibility
+
+#### 4. File Path Issues
+```
+ERROR: File not found or inaccessible
+```
+**Solution**:
+- Use absolute paths when possible
+- Check file permissions
+- Verify file formats (.tif for rasters, .shp for vectors)
+
+#### 5. GUI Won't Start
+```
+ERROR: tkinter is not available
+```
+**Solution**:
+```bash
+conda activate py310
+conda install tk
+```
+
+### Performance Tips
+
+1. **Use appropriate EPSG codes** for your region to minimize reprojection overhead
+2. **Organize vector files** in separate directories for different processing batches
+3. **Monitor memory usage** when processing large raster files
+4. **Use SSD storage** for faster I/O operations
 
 ### Getting Help
 
-For additional help:
+1. **Check logs**: Review detailed logs in GUI or CLI output
+2. **Validate inputs**: Use the validation function before processing
+3. **Test with small datasets**: Verify setup with minimal data first
+4. **Check file formats**: Ensure rasters are GeoTIFF and vectors are Shapefile format
 
-```bash
-python main.py --help
-```
+## API Reference
 
-## Performance Considerations
+### Core Functions
 
-### Optimization Tips
+#### `validate_all_inputs(ohm_path, slope_path, input_dir, output_dir, epsg=None)`
+Validates all input parameters and files.
 
-1. **File Organization**: Group related vector files in the same folder
-2. **CRS Alignment**: Pre-align CRS when possible to avoid reprojection overhead
-3. **File Formats**: GeoJSON typically processes faster than Shapefiles
-4. **System Resources**: Ensure adequate RAM for large raster files
+**Parameters**:
+- `ohm_path` (str): Path to OHM raster file
+- `slope_path` (str): Path to slope raster file  
+- `input_dir` (str): Directory containing vector files
+- `output_dir` (str): Output directory for results
+- `epsg` (int, optional): EPSG code for coordinate system
 
-### Expected Processing Times
+**Returns**: `bool` - True if all inputs are valid
 
-Processing time depends on:
-- Number and size of vector files
-- Raster resolution and extent
-- System specifications
-- Complexity of vector geometries
+#### `run_batch_processing(ohm_path, slope_path, input_dir, output_dir, epsg=None)`
+Executes batch zonal statistics processing.
 
-Typical performance: 10-50 vector files per minute on standard hardware.
+**Parameters**: Same as `validate_all_inputs`
+
+**Returns**: `bool` - True if processing completed successfully
+
+### GUI Classes
+
+#### `ZonalStatsGUI(root)`
+Main GUI application class.
+
+**Methods**:
+- `setup_ui()`: Initialize user interface components
+- `validate_inputs()`: Validate user inputs
+- `start_processing()`: Begin batch processing
+- `update_progress(value, message)`: Update progress display
 
 ## Contributing
 
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/new-feature`)
+3. Commit changes (`git commit -am 'Add new feature'`)
+4. Push to branch (`git push origin feature/new-feature`)
+5. Create Pull Request
+
 ### Development Setup
 
-1. Fork the repository
-2. Create a virtual environment
-3. Install development dependencies
-4. Make your changes
-5. Run tests
-6. Submit a pull request
-
-### Code Style
-
-- Follow PEP 8 Python style guidelines
-- Use type hints where appropriate
-- Include docstrings for all functions
-- Maintain modular structure
-
-### Testing
-
-Run tests before submitting changes:
-
 ```bash
-python -m pytest tests/
+# Clone repository
+git clone <repository-url>
+cd vector-zonal-stats
+
+# Create development environment
+conda create -n zonal-stats-dev python=3.10
+conda activate zonal-stats-dev
+pip install -r requirements.txt
+
+# Install development dependencies
+pip install pytest black flake8
 ```
 
 ## License
 
-This project is licensed under the MIT License. See the LICENSE file for details.
+This project is licensed under the MIT License. See LICENSE file for details.
 
 ---
 
-## Support
-
-For issues, questions, or contributions, please:
-1. Check the troubleshooting section
-2. Search existing issues
-3. Create a new issue with detailed information
-4. Include log output when reporting bugs
-
 **Version**: 1.0.0  
-**Python Compatibility**: 3.10+  
-**Last Updated**: 2025
+**Last Updated**: 2025  
+**Compatibility**: Python 3.8+, Windows/macOS/Linux
