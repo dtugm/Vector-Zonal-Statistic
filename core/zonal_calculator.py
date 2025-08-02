@@ -37,7 +37,7 @@ def calculate_zonal_statistics(gdf: gpd.GeoDataFrame, raster_path: str,
         logger.debug(f"Calculating zonal statistics with {len(gdf)} features")
         
         zonal_results = zonal_stats(
-            gdf, 
+            gdf[~gdf.is_empty], 
             raster_path, 
             stats=stats,
             geojson_out=True,
