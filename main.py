@@ -49,6 +49,13 @@ Examples:
     
     # Optional arguments
     parser.add_argument(
+        '-e', '--epsg-code', 
+        type=int, 
+        default=32748,
+        help='EPSG code for coordinate reference system (default: 4326)'
+    )
+
+    parser.add_argument(
         '-v', '--verbose',
         action='store_true',
         help='Enable verbose logging'
@@ -89,6 +96,7 @@ def main():
     logger.info(f"Slope Raster: {args.slope_raster}")
     logger.info(f"Input Folder: {args.input_folder}")
     logger.info(f"Output Folder: {args.output_folder}")
+    logger.info(f"CRS output: {args.epsg_code}")
     
     # Validate inputs
     if not validate_all_inputs(args.ohm_raster, args.slope_raster, 
@@ -102,7 +110,8 @@ def main():
             args.ohm_raster,
             args.slope_raster,
             args.input_folder,
-            args.output_folder
+            args.output_folder,
+            args.epsg_code
         )
         
         if successful_count == total_count:

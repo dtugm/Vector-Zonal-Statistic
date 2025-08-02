@@ -6,21 +6,22 @@ from pathlib import Path
 from typing import List, Dict, Any
 from utils.logger_config import logger
 
-def create_geojson_structure(features: List[Dict[str, Any]]) -> Dict[str, Any]:
+def create_geojson_structure(features: List[Dict[str, Any]], epsg_code: int = 32748) -> Dict[str, Any]:
     """
-    Create GeoJSON structure from features
+    Create GeoJSON structure from features with dynamic CRS
     
     Args:
         features: List of feature dictionaries
+        epsg_code: EPSG code for coordinate reference system (default: 4326)
     
     Returns:
-        GeoJSON dictionary
+        GeoJSON dictionary with specified CRS
     """
     return {
         'type': 'FeatureCollection',
         'crs': {
             'type': 'name',
-            'properties': {'name': 'urn:ogc:def:crs:EPSG::4326'}
+            'properties': {'name': f'urn:ogc:def:crs:EPSG::{epsg_code}'}
         },
         'features': features
     }
@@ -39,7 +40,8 @@ def generate_output_filename(original_file: Path, suffix: str = "_zonal_stats") 
     return f"{original_file.stem}{suffix}.geojson"
 
 def save_geojson_results(features: List[Dict[str, Any]], 
-                        output_file: Path) -> bool:
+                        output_file: Path,
+                        epsg_code: int) -> bool:
     """
     Save features as GeoJSON file
     
@@ -52,7 +54,7 @@ def save_geojson_results(features: List[Dict[str, Any]],
     """
     try:
         # Create GeoJSON structure
-        output_geojson = create_geojson_structure(features)
+        output_geojson = create_geojson_structure(features, epsg_code)
         
         # Ensure output directory exists
         output_file.parent.mkdir(parents=True, exist_ok=True)
@@ -70,7 +72,8 @@ def save_geojson_results(features: List[Dict[str, Any]],
 
 def save_processing_results(features: List[Dict[str, Any]], 
                           original_file: Path, 
-                          output_folder: str) -> bool:
+                          output_folder: str,
+                          epsg_code: int = 32748) -> bool:
     """
     Save combined processing results to output file
     
@@ -91,7 +94,7 @@ def save_processing_results(features: List[Dict[str, Any]],
     output_file = Path(output_folder) / output_filename
     
     # Save results
-    return save_geojson_results(features, output_file)
+    return save_geojson_results(features, output_file, epsg_code)
 
 def create_processing_summary(successful_count: int, total_count: int, 
                             output_folder: str) -> bool:

@@ -13,7 +13,7 @@ from .statistics_combiner import combine_statistics_lists, validate_statistics_d
 from .result_saver import save_processing_results, create_processing_summary
 
 def process_single_file(vector_file: Path, ohm_raster: str, slope_raster: str, 
-                       output_folder: str) -> bool:
+                       output_folder: str, epsg_code: int) -> bool:
     """
     Process a single vector file for zonal statistics
     
@@ -53,7 +53,7 @@ def process_single_file(vector_file: Path, ohm_raster: str, slope_raster: str,
             return False
         
         # Save results
-        success = save_processing_results(combined_features, vector_file, output_folder)
+        success = save_processing_results(combined_features, vector_file, output_folder, epsg_code)
         
         if success:
             logger.info(f"Successfully processed: {vector_file.name}")
@@ -65,7 +65,7 @@ def process_single_file(vector_file: Path, ohm_raster: str, slope_raster: str,
         return False
 
 def run_batch_processing(ohm_raster: str, slope_raster: str, input_folder: str, 
-                        output_folder: str) -> Tuple[int, int]:
+                        output_folder: str, epsg_code: int) -> Tuple[int, int]:
     """
     Process all vector files in batch
     
@@ -97,7 +97,7 @@ def run_batch_processing(ohm_raster: str, slope_raster: str, input_folder: str,
     for i, vector_file in enumerate(vector_files, 1):
         logger.info(f"Processing file {i}/{total_count}: {vector_file.name}")
         
-        success = process_single_file(vector_file, ohm_raster, slope_raster, output_folder)
+        success = process_single_file(vector_file, ohm_raster, slope_raster, output_folder, epsg_code)
         if success:
             successful_count += 1
     
