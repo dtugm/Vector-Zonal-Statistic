@@ -13,7 +13,7 @@ def get_default_statistics() -> List[str]:
     Returns:
         List of statistic names
     """
-    return ['mean', 'min', 'max', 'std', 'count']
+    return ['mean']
 
 def calculate_zonal_statistics(gdf: gpd.GeoDataFrame, raster_path: str, 
                              stats: List[str] = None, 
@@ -72,7 +72,7 @@ def calculate_ohm_statistics(gdf: gpd.GeoDataFrame, ohm_raster: str) -> List[Dic
         List of dictionaries with OHM zonal statistics
     """
     logger.info("Calculating OHM zonal statistics")
-    return calculate_zonal_statistics(gdf, ohm_raster, prefix="ohm")
+    return calculate_zonal_statistics(gdf, ohm_raster, prefix="BHM")
 
 def calculate_slope_statistics(gdf: gpd.GeoDataFrame, slope_raster: str) -> List[Dict[str, Any]]:
     """
@@ -86,4 +86,4 @@ def calculate_slope_statistics(gdf: gpd.GeoDataFrame, slope_raster: str) -> List
         List of dictionaries with slope zonal statistics
     """
     logger.info("Calculating slope zonal statistics")
-    return calculate_zonal_statistics(gdf, slope_raster, prefix="slope")
+    return calculate_zonal_statistics(gdf, slope_raster, prefix="SLOPE")
